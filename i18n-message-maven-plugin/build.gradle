@@ -1,0 +1,101 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id "com.liferay.maven.plugin.builder" version "1.2.8"
+    id 'signing'
+}
+
+dependencies {
+    implementation project(':i18n-message-plugin-core')
+    implementation 'org.apache.maven:maven-plugin-api:3.8.2'
+    compileOnly 'org.apache.maven.plugin-tools:maven-plugin-annotations:3.6.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+buildPluginDescriptor {
+    goalPrefix = "plugin"
+    pomGroupId = project.group
+    pomArtifactId = project.name
+    pomVersion = project.version
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allJava
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+javadoc {
+    options.author = true
+    options.version = true
+    options.header = project.name
+    logging.captureStandardError LogLevel.INFO
+    logging.captureStandardOutput LogLevel.INFO
+    options.encoding = 'UTF-8'
+    options.charSet = 'UTF-8'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId project.group
+            artifactId project.name
+            version project.version
+
+            from components.java
+
+            artifact sourcesJar
+            artifact javadocJar
+
+            pom {
+                name = "i18n-message-maven-plugin"
+                description = "i18n-message-maven-plugin"
+                url = "https://github.com/humbinal/i18n-message-plugin"
+                licenses {
+                    license {
+                        name = "The Apache License, Version 2.0"
+                        url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'humbinal'
+                        name = "humbinal"
+                        email = "humbinal@126.com"
+                    }
+                }
+                scm {
+                    connection = "scm:git:https://github.com/humbinal/i18n-message-plugin.git"
+                    developerConnection = "scm:git:https://github.com/humbinal/i18n-message-plugin.git"
+                    url = "https://github.com/humbinal/i18n-message-plugin"
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            credentials {
+                username NEXUS_USERNAME
+                password NEXUS_PASSWORD
+            }
+        }
+    }
+}
+
+sourcesJar.dependsOn buildPluginDescriptor
+
+signing {
+    sign publishing.publications.mavenJava
+}

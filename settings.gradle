@@ -1,0 +1,4 @@
+rootProject.name = 'i18n-message-plugin'
+include 'i18n-message-plugin-core'
+include 'i18n-message-gradle-plugin'
+include 'i18n-message-maven-plugin'
