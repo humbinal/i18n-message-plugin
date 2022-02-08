@@ -12,6 +12,10 @@ gradle and maven plugin for generate i18n message file from java source file wri
 
 > 注意: 请使用最新发布版本`1.0.2`
 
+## 示例
+
+`examples`目录中存放着基于`javafx`、`springboot`框架的应用完整示例，[前往查看](examples/README.md)。
+
 ## 动机
 
 我们在进行java开发(j2ee、springboot、validation、javafx客户端应用等)时，常常需要支持多语言，i18n多语言消息文件一般配置在`resources/message.properties`
